@@ -117,6 +117,13 @@ contract Exchange is owned {
         return 0;
     }
 
+    function getSymbolIndexOrThrow(string symbolName) private view returns (uint8) {
+        require(hasToken(symbolName));
+        uint8 index = getSymbolIndex(symbolName);
+        require(index > 0);
+        return index;
+    }
+
 
     /////////////////////////////////
     // STRING COMPARISON FUNCTION  //
@@ -140,15 +147,33 @@ contract Exchange is owned {
     //////////////////////////////////
     // DEPOSIT AND WITHDRAWAL TOKEN //
     //////////////////////////////////
-    function depositToken(string symbolName, uint amount) {
+    function depositToken(string symbolName, uint amount) public {
+        symbolNameIndex = getSymbolIndexOrThrow(symbolName);
+        require(tokens[symbolNameIndex].tokenContract != address(0));
+
+        ERC20Interface token = ERC20Interface(tokens[symbolNameIndex].tokenContract);
+
+        require(token.transferFrom(msg.sender, address(this), amount) == true);
+        require(tokenBalanceForAddress[msg.sender][symbolNameIndex] + amount >= tokenBalanceForAddress[msg.sender][symbolNameIndex]);
+        tokenBalanceForAddress[msg.sender][symbolNameIndex] += amount;
     }
 
-    function withdrawToken(string symbolName, uint amount) {
+    function withdrawToken(string symbolName, uint amount) public {
+        symbolNameIndex = getSymbolIndexOrThrow(symbolName);
+        require(tokens[symbolNameIndex].tokenContract != address(0));
+
+        ERC20Interface token = ERC20Interface(tokens[symbolNameIndex].tokenContract);
+
+        require(tokenBalanceForAddress[msg.sender][symbolNameIndex] - amount >= 0);
+        require(tokenBalanceForAddress[msg.sender][symbolNameIndex] - amount <= tokenBalanceForAddress[msg.sender][symbolNameIndex]);
+
+        tokenBalanceForAddress[msg.sender][symbolNameIndex] -= amount;
+        require(token.transfer(msg.sender, amount) == true);
     }
 
-    function getBalance(string symbolName) constant returns (uint) {
+    function getBalance(string symbolName) view public returns (uint) {
+        return tokenBalanceForAddress[msg.sender][getSymbolIndexOrThrow(symbolName)];
     }
-
 
 
 
