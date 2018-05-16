@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.21;
 
 
 import "./owned.sol";
@@ -67,13 +67,20 @@ contract Exchange is owned {
     //////////////////////////////////
     // DEPOSIT AND WITHDRAWAL ETHER //
     //////////////////////////////////
-    function depositEther() payable {
+    function depositEther() external payable {
+        require(balanceEthForAddress[msg.sender] + msg.value >= balanceEthForAddress[msg.sender]);
+        balanceEthForAddress[msg.sender] += msg.value;
     }
 
-    function withdrawEther(uint amountInWei) {
+    function withdrawEther(uint amountInWei) external {
+        require(balanceEthForAddress[msg.sender] - amountInWei >= 0);
+        require(balanceEthForAddress[msg.sender] - amountInWei <= balanceEthForAddress[msg.sender]);
+        balanceEthForAddress[msg.sender] -= amountInWei;
+        msg.sender.transfer(amountInWei);
     }
 
-    function getEthBalanceInWei() constant returns (uint){
+    function getEthBalanceInWei() public view returns (uint){
+        return balanceEthForAddress[msg.sender];
     }
 
 

@@ -16,7 +16,7 @@ contract('my token', async (accounts) => {
 
   it('the second account should not own any tokens', async () => {
     const secondaryAccount = await myTokenInstance.balanceOf(accounts[1])
-    assert.equal(secondaryAccount.toNumber(), 0, "Total amount of tokens is owned by owner")
+    assert.equal(secondaryAccount.toNumber(), 0)
   })
 
   it('should be possible to send tokens between accounts', async () => {
