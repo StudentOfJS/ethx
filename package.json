@@ -14,7 +14,7 @@
     "cross-spawn": "4.0.2",
     "css-loader": "0.26.0",
     "detect-port": "1.0.1",
-    "dotenv": "2.0.0",
+    "dotenv": "^5.0.1",
     "drizzle": "^1.0.1",
     "drizzle-react": "^1.0.1",
     "drizzle-react-components": "^1.0.1",
